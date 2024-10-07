@@ -1,0 +1,9 @@
+custid - session
+order - query 
+type - query -> if post[package id set then type = package]
+package_id - if post[!package id] = Null or add
+dish_count - user
+total_amount - script or query
+staff_count - calculate script
+status - query [pending]
+address - user

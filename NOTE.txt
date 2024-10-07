@@ -1,0 +1,25 @@
+mode1 is modified
+and 
+more changes happened to the product details, quick view and index.php
+
+
+navigation issue
+
+change footer
+order details page
+
+admin side
+
+order
+order status
+
+report
+
+change main things in orders
+in orders
+- check if staff is exist (provide validations)
+- remove pop up notification
+- remove from cart that cart id 
+- add minimum dish count to 500 
+
+
