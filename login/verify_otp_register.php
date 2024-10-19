@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['verifyOtp'])) {
             unset($_SESSION['sesFogetOtp']);
 
             // Redirect to client dashboard
-            header('Location: ../index.php?email=' . urlencode($_SESSION['email']));
+            header('Location: login.php');
             exit(); // Stop further script execution after redirection
         } else {
             $errors[] = "Registration failed! Please try again.";

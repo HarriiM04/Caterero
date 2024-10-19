@@ -40,25 +40,28 @@ function calculate_total($package_id, $dish_count)
 
 function calculate_staff_count($dish_count)
 {
-    $base_dishes = 500;
-    $chefs = 5;
-    $coordinators = 2;
-    $waitstaff = 13;
+    // Minimum 300 dishes and corresponding staff
+    $base_dishes = 300;
+    $total_staff_base = 12; // Total staff for 300 dishes
+    
+    // Calculate the number of increments
+    $increments = $dish_count / $base_dishes;
+    
+    // Calculate total staff based on increments
+    $total_staff = ceil($total_staff_base * $increments);
 
-    if ($dish_count > $base_dishes) {
-        $extra_dishes = $dish_count - $base_dishes;
-        $increment = 100;
-        $increments = ceil($extra_dishes / $increment);
+    // Split the total staff into roles based on proportions
+    $chefs = ceil(($total_staff / 12) * 3); // 3 out of 12 are chefs
+    $coordinators = ceil(($total_staff / 12) * 1); // 1 out of 12 is a coordinator
+    $waitstaff = ceil(($total_staff / 12) * 8); // 8 out of 12 are waitstaff
 
-        $chefs += floor(0.5 * $increments);
-        $coordinators += floor(0.2 * $increments);
-        $waitstaff += floor(1.3 * $increments);
-    }
-
+    // Return staff details as an associative array
     return [
         'chefs' => $chefs,
         'coordinators' => $coordinators,
         'waitstaff' => $waitstaff,
-        'total_staff' => $chefs + $coordinators + $waitstaff
+        'total_staff' => $total_staff
     ];
 }
+
+

@@ -178,7 +178,6 @@ if (isset($_POST['add_to_cart'])) {
 							}
 							?>
 						</div>
-
 						<!-- Availability -->
 						<div class="p-t-33">
 							<p><strong>Availability:</strong> <?php echo $package['availability']; ?></p>

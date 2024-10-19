@@ -1,13 +1,12 @@
-
 <?php
 session_start();
-if(!$_SESSION['email']){
+if (!$_SESSION['email']) {
     header("Location: index.php");
 }
 include 'adminback.php';
 
 // Retrieve from session
-  // Replace this with actual logged-in customer ID retrieval
+// Replace this with actual logged-in customer ID retrieval
 $admin = new adminback();
 
 $customer_mail = $_SESSION['email']; // Use customer ID from session
@@ -26,23 +25,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $coordinators_count = intval($_POST['coordinators']); // New line
     $waitstaff_count = intval($_POST['waitstaff']); // New line
 
+
+
     // Call the create_order method
     if ($admin->create_order($customer_mail, $order_date, $package_id, $dish_count, $total_amount, $staff_count, $service_address, $service_date)) {
 
-        $admin->assign_designation_staff('Chef', $chefs_count);
-        $admin->assign_designation_staff('Event Coordinator', $coordinators_count);
+        // Assign Chefs
+        $chefs_result = $admin->assign_designation_staff('Chef', $chefs_count);
+        if ($chefs_result !== "Staff assigned successfully.") {
+            echo "<script>alert('Error: $chefs_result'); window.location.href='error_page.php';</script>";
+            exit; // Stop further execution if staff assignment fails
+        }
 
-        $admin->assign_designation_staff('Waitstaff', $waitstaff_count);
+        // Assign Event Coordinators
+        $coordinators_result = $admin->assign_designation_staff('Event Coordinator', $coordinators_count);
+        if ($coordinators_result !== "Staff assigned successfully.") {
+            echo "<script>alert('Error: $coordinators_result'); window.location.href='error_page.php';</script>";
+            exit; // Stop further execution if staff assignment fails
+        }
 
-        echo "<script>alert('Order created successfully!'); window.location.href='success_page.php';</script>"; // Redirect or show success message
+        // Assign Waitstaff
+        $waitstaff_result = $admin->assign_designation_staff('Waitstaff', $waitstaff_count);
+        if ($waitstaff_result !== "Staff assigned successfully.") {
+            echo "<script>alert('Error: $waitstaff_result'); window.location.href='error_page.php';</script>";
+            exit; // Stop further execution if staff assignment fails
+        }
 
-       
-       
-
+        // If everything is successful, proceed with the success message
+        echo "<script>alert('Order created successfully!'); window.location.href='success_page.php';</script>";
     } else {
-       // echo "<script>alert('Error creating order. Please try again.');</script>"; // Show error message
-
-       $message = "<div class='error'>Error creating order. Please try again.</div>";
+        // Show error message for order creation failure
+        $message = "<div class='error'>Error creating order. Please try again.</div>";
     }
 }
 ?>
@@ -51,18 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <style>
     .success {
-    color: green;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
+        color: green;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
 
-.error {
-    color: red;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
+    .error {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
 </style>
+
 <head>
     <title>Orders</title>
     <meta charset="UTF-8">
@@ -143,9 +156,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <!-- Dish Count -->
                         <div class="p-t-20">
+
                             <label for="dish_count">Dish Count:</label>
-                            <input type="number" id="dish_count" name="dish_count" class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-tb-10" value="1" min="1" required>
+
+                            <input type="number" id="dish_count" name="dish_count" class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-tb-10"  min="300" max="5000" placeholder="300 to 5000 valid" required>
+                            <span id="error_message" style="color: red; display: none;">Minimum 300 dishes are required.</span>
+                            <span id="error_message2" style="color: red; display: none;">Maximum 5000 dishes are required.</span>
+
                         </div>
+                        <script>
+                            document.getElementById('dish_count').addEventListener('input', function() {
+                                var dishCount = parseInt(this.value, 10); // Parse input as an integer
+                                var errorMessage = document.getElementById('error_message');
+                                var errorMessage2 = document.getElementById('error_message2');
+
+                                // Reset error messages
+                                errorMessage.style.display = 'none';
+                                errorMessage2.style.display = 'none';
+
+                                // Validate the dish count
+                                if (isNaN(dishCount)) {
+                                    // Optionally handle case when input is not a number
+                                    errorMessage.textContent = "Please enter a valid number.";
+                                    errorMessage.style.display = 'block';
+                                } else if (dishCount < 300) {
+                                    errorMessage.textContent = "Minimum dish count is 300.";
+                                    errorMessage.style.display = 'block';
+                                } else if (dishCount > 5000) {
+                                    errorMessage2.textContent = "Maximum dish count is 5000.";
+                                    errorMessage2.style.display = 'block';
+                                }
+                            });
+                        </script>
+
+
 
                         <!-- Staff Count (will be calculated and filled via AJAX) -->
                         <div class="p-t-20">

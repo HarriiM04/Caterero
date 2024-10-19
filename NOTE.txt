@@ -18,8 +18,8 @@ report
 change main things in orders
 in orders
 - check if staff is exist (provide validations)
-- remove pop up notification
-- remove from cart that cart id 
-- add minimum dish count to 500 
+- remove pop up notification 
+- remove from cart that cart id done
+- add minimum dish count to 500  done
 
 
