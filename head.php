@@ -28,9 +28,17 @@
 							Help & FAQs
 						</a>
 
-						<a href="#" class="flex-c-m trans-04 p-lr-25">
-							My Account
-						</a>
+						<?php if (isset($_SESSION['email']) && !empty($_SESSION['email'])): ?>
+							<!-- If user is logged in, show profile link -->
+							<a href="profile.php" class="flex-c-m p-lr-10 trans-04">
+								My Account
+							</a>
+						<?php else: ?>
+							<!-- If user is not logged in, show login/register options -->
+							<a href="login/login.php" class="flex-c-m p-lr-10 trans-04">
+								My Account
+							</a>
+						<?php endif; ?>
 
 						<a href="#" class="flex-c-m trans-04 p-lr-25">
 							EN
@@ -169,9 +177,17 @@
 							Help & FAQs
 						</a>
 
-						<a href="#" class="flex-c-m p-lr-10 trans-04">
-							My Account
-						</a>
+						<?php if (isset($_SESSION['email']) && !empty($_SESSION['email'])): ?>
+							<!-- If user is logged in, show profile link -->
+							<a href="profile.php" class="flex-c-m p-lr-10 trans-04">
+								My Account
+							</a>
+						<?php else: ?>
+							<!-- If user is not logged in, show login/register options -->
+							<a href="login/login.php" class="flex-c-m p-lr-10 trans-04">
+								My Account
+							</a>
+						<?php endif; ?>
 
 						<a href="#" class="flex-c-m p-lr-10 trans-04">
 							EN

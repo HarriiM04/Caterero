@@ -17,7 +17,7 @@ class  adminback
             die("Databse connection error!!!");
         }
     }
-
+    
     public function display_userEmail()
     {
         $query = "SELECT email FROM users";
@@ -29,6 +29,98 @@ class  adminback
             return false; // Handle error accordingly
         }
     }
+
+    public function fetch_user_details_by_email($email)
+    {
+        // Prepare SQL query to fetch user details
+        $query = "SELECT id, firstname, lastname, contact, email, password FROM users WHERE email = ?";
+        $stmt = $this->connection->prepare($query);
+
+        if ($stmt) {
+            $stmt->bind_param("s", $email); // "s" specifies that it's a string
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            // Check if user exists
+            if ($result->num_rows > 0) {
+                // Fetch user data
+                $row = $result->fetch_assoc();
+                return $row; // Return the associative array containing user details
+            } else {
+                return false; // No user found
+            }
+
+            // Close the statement
+            $stmt->close();
+        } else {
+            // Handle query preparation failure
+            return false;
+        }
+    }
+
+    public function update_user_profile_and_password($id, $new_fname, $new_lname, $new_contact, $current_password, $new_password, $user_password) {
+        // Initialize success flag
+        $success = true;
+    
+        // Prepare the SQL query to update user details
+        $query = "UPDATE users SET firstname = ?, lastname = ?, contact = ? WHERE id = ?";
+        $stmt = $this->connection->prepare($query);
+    
+        if ($stmt) {
+            // Bind parameters to the query
+            $stmt->bind_param("sssi", $new_fname, $new_lname, $new_contact, $id);
+    
+            // Execute the query and check the result
+            if (!$stmt->execute()) {
+                $success = false; // Update profile failed
+            }
+            $stmt->close();
+        } else {
+            $success = false; // Error preparing the query
+        }
+    
+        // Handle password change if provided
+        if (!empty($new_password)) {
+            // Verify current password
+            if (password_verify($current_password, $user_password)) {
+                // Hash the new password and update in the database
+                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                $query = "UPDATE users SET password = ? WHERE id = ?";
+                $stmt = $this->connection->prepare($query);
+                $stmt->bind_param("si", $hashed_password, $id);
+                if (!$stmt->execute()) {
+                    $success = false; // Update password failed
+                }
+                $stmt->close();
+            } else {
+                return "Current password is incorrect!";
+            }
+        }
+    
+        return $success ? true : "Profile update failed!";
+    }
+    
+    public function update_password($user_id, $hashed_password) {
+        // Prepare the SQL statement
+        $stmt = $this->connection->prepare("UPDATE users SET password = ? WHERE id = ?");
+        if (!$stmt) {
+            echo "Prepare failed: (" . $this->connection->errno . ") " . $this->connection->error;
+            return false;
+        }
+
+        // Bind parameters
+        $stmt->bind_param("si", $hashed_password, $user_id);
+
+        // Execute the statement
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true; // Success
+        } else {
+            echo "Execute failed: (" . $stmt->errno . ") " . $stmt->error;
+            return false; // Failed to update
+        }
+    }
+
 
     public function display_cart_count($customerMail)
     {
@@ -133,7 +225,13 @@ class  adminback
         $stmt->bind_param("si", $designation, $count);
         $stmt->execute();
         $result = $stmt->get_result();
-
+    
+        // Check if there are enough available staff
+        if ($result->num_rows < $count) {
+            // Handle case where not enough unassigned staff are available
+            return "Not enough available staff for the requested designation.";
+        }
+    
         // Update status of assigned staff to '1' (Assigned)
         while ($row = $result->fetch_assoc()) {
             $staff_id = $row['Id'];
@@ -142,7 +240,10 @@ class  adminback
             $update_stmt->bind_param("i", $staff_id);
             $update_stmt->execute();
         }
+    
+        return "Staff assigned successfully.";
     }
+    
 
     public function create_order($cust_mail, $order_date, $package_id, $dish_count, $total_amount, $staff_count, $service_address, $service_date)
     {
