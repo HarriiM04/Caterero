@@ -166,11 +166,6 @@ class  adminback
         }
     }
 
-
-
-
-
-
     public function display_package()
     {
         $query = "SELECT * FROM Package";
@@ -185,7 +180,7 @@ class  adminback
 
     public function display_order($customerMail)
     {
-        $query = "SELECT o.Id, u.firstname, o.order_date, o.type, p.name
+        $query = "SELECT o.Id, o.order_date, p.name, o.status
                      FROM orders AS o
                         JOIN users AS u ON o.Cust_id = u.id
                             JOIN package AS p ON o.package_id = p.id where o.Cust_id = (SELECT id FROM users WHERE email = '$customerMail')
@@ -217,32 +212,24 @@ class  adminback
 
    
 
-    public function assign_designation_staff($designation, $count)
-    {
-        // Fetch available staff by designation and status
-        $sql = "SELECT Id FROM staff WHERE designation = ? AND status = 0 LIMIT ?";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bind_param("si", $designation, $count);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    
-        // Check if there are enough available staff
-        if ($result->num_rows < $count) {
-            // Handle case where not enough unassigned staff are available
-            return "Not enough available staff for the requested designation.";
-        }
-    
-        // Update status of assigned staff to '1' (Assigned)
-        while ($row = $result->fetch_assoc()) {
-            $staff_id = $row['Id'];
-            $update_sql = "UPDATE staff SET status = 1 WHERE Id = ?";
-            $update_stmt = $this->connection->prepare($update_sql);
-            $update_stmt->bind_param("i", $staff_id);
-            $update_stmt->execute();
-        }
-    
-        return "Staff assigned successfully.";
-    }
+    // public function assign_designation_staff($designation, $count)
+    // {
+    //     // Fetch available staff by designation and status
+    //     $sql = "SELECT Id FROM staff WHERE designation = ? AND status = 0 LIMIT ?";
+    //     $stmt = $this->connection->prepare($sql);
+    //     $stmt->bind_param("si", $designation, $count);
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+
+    //     // Update status of assigned staff to '1' (Assigned)
+    //     while ($row = $result->fetch_assoc()) {
+    //         $staff_id = $row['Id'];
+    //         $update_sql = "UPDATE staff SET status = 1 WHERE Id = ?";
+    //         $update_stmt = $this->connection->prepare($update_sql);
+    //         $update_stmt->bind_param("i", $staff_id);
+    //         $update_stmt->execute();
+    //     }
+    // }
     
 
     public function create_order($cust_mail, $order_date, $package_id, $dish_count, $total_amount, $staff_count, $service_address, $service_date)

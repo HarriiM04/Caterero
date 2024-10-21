@@ -30,33 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Call the create_order method
     if ($admin->create_order($customer_mail, $order_date, $package_id, $dish_count, $total_amount, $staff_count, $service_address, $service_date)) {
 
-        // Assign Chefs
-        $chefs_result = $admin->assign_designation_staff('Chef', $chefs_count);
-        if ($chefs_result !== "Staff assigned successfully.") {
-            echo "<script>alert('Error: $chefs_result'); window.location.href='error_page.php';</script>";
-            exit; // Stop further execution if staff assignment fails
-        }
+   
 
-        // Assign Event Coordinators
-        $coordinators_result = $admin->assign_designation_staff('Event Coordinator', $coordinators_count);
-        if ($coordinators_result !== "Staff assigned successfully.") {
-            echo "<script>alert('Error: $coordinators_result'); window.location.href='error_page.php';</script>";
-            exit; // Stop further execution if staff assignment fails
-        }
+        echo "<script>alert('Order created successfully!'); window.location.href='success_page.php';</script>"; // Redirect or show success message
 
-        // Assign Waitstaff
-        $waitstaff_result = $admin->assign_designation_staff('Waitstaff', $waitstaff_count);
-        if ($waitstaff_result !== "Staff assigned successfully.") {
-            echo "<script>alert('Error: $waitstaff_result'); window.location.href='error_page.php';</script>";
-            exit; // Stop further execution if staff assignment fails
-        }
+       
+       
 
-        // If everything is successful, proceed with the success message
-        echo "<script>alert('Order created successfully!'); window.location.href='success_page.php';</script>";
     } else {
-        // Show error message for order creation failure
-        $message = "<div class='error'>Error creating order. Please try again.</div>";
-    }
+       // echo "<script>alert('Error creating order. Please try again.');</script>"; // Show error message
+
+       $message = "<div class='error'>Error creating order. Please try again.</div>";
+    }   
 }
 ?>
 

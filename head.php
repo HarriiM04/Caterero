@@ -98,7 +98,7 @@
 							</li>
 
 							<li>
-								<a href="blog.html">Blog</a>
+								<a href="myorders.php">My Orders</a>
 							</li>
 
 							<li>
@@ -239,7 +239,7 @@
 				</li>
 
 				<li>
-					<a href="blog.html">Blog</a>
+					<a href="myorders.php">My Orders</a>
 				</li>
 
 				<li>
